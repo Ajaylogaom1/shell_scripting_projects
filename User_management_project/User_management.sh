@@ -33,11 +33,24 @@ create_group(){
 	sudo groupadd "$groupname"
 
 	if [ $? -eq 0 ]; then
-		echo "$group created sucessfully"
+		echo "$groupname created sucessfully"
 	else
 		echo "failed to created"
 	fi
 }
+
+delete_group(){
+	    read -p "Enter group name to delete: " groupname
+
+            sudo groupdel "$groupname"
+
+           if [ $? -eq 0 ]; then
+		   echo "$groupname deleted successfully"
+	   else
+		   echo "Group deletion failed"
+	   fi
+}
+
 add_user_group(){
 	read -p "username:" username
 	read -p "groupname:" groupname
@@ -103,24 +116,27 @@ do
 		3)
 			create_group
 			;;
-
 		4)
-			add_user_group
+			delete_group
 			;;
 
 		5)
-			remove_user_from_group
+			add_user_group
 			;;
 
 		6)
-			user_information
+			remove_user_from_group
 			;;
 
 		7)
-			list_user
+			user_information
 			;;
 
 		8)
+			List_user
+			;;
+
+		9)
                         echo "Exiting..."
                         exit 0
 			;;
