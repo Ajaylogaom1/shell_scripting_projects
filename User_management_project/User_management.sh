@@ -1,5 +1,11 @@
 #!/bin/bash
 
+LOG_FILE="User_management.log"
+
+log_message() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
 create_user(){
 	read -p "username:" username
 
@@ -7,11 +13,13 @@ create_user(){
 
 	if [ $? -eq 0 ]; then
 		echo "username $username is created sucessfully"
+		log_message "User $username created successfully"
 
 		sudo passwd "$username"
 
 	else
 		echo "user creation failed"
+		log_message "Failed to create user $username"
 	fi
 }
 
@@ -22,8 +30,10 @@ delete_user(){
 
 	if [ $? -eq 0 ]; then
 		echo "$username deleted sucessfully"
+		log_message "User $username deleted successfully"
 	else
 		echo " Deletion failed"
+		log_message "Failed to delete user $username"
 	fi
 }
 
@@ -34,8 +44,10 @@ create_group(){
 
 	if [ $? -eq 0 ]; then
 		echo "$groupname created sucessfully"
+		log_message "User $groupname created successfully"
 	else
-		echo "failed to created"
+		echo "failed to create group"
+		log_message "Failed to create group $groupname"
 	fi
 }
 
@@ -46,8 +58,10 @@ delete_group(){
 
            if [ $? -eq 0 ]; then
 		   echo "$groupname deleted successfully"
+		   log_message "User $groupname deleted successfully"
 	   else
 		   echo "Group deletion failed"
+		   log_message "Failed to delete group $groupname"
 	   fi
 }
 
@@ -59,8 +73,10 @@ add_user_group(){
 
         if [ $? -eq 0 ]; then
 	        echo "$username added to $groupname"
+		log_message "User $username added in $groupname successfully"
 	else
-	        echo "user namot added"
+	        echo "user name added"
+		log_message "Failed to add $username to group $groupname"
 	fi
 }
 
@@ -72,8 +88,10 @@ remove_user_from_group(){
 
 	if [ $? -eq 0 ]; then
 		echo "$username removed $groupname"
+		log_message "User $username is removed from $groupname successfully"
 	else
 		echo "failed to remove"
+		log_message "Failed to remove $username from group $groupname"
 	fi
 }
 
@@ -88,6 +106,7 @@ user_information(){
         groups "$username"
     else
         echo "User does not exist"
+	log_message "Failed to get user information"
     fi
 }
 
