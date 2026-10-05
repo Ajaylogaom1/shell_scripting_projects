@@ -1,5 +1,22 @@
 #!/bin/bash
 
+show_menu() {
+    echo
+    echo "================================="
+    echo "     USER MANAGEMENT SYSTEM"
+    echo "================================="
+    echo "1. Create User"
+    echo "2. Delete User"
+    echo "3. Create Group"
+    echo "4. Delete Group"
+    echo "5. Add User to Group"
+    echo "6. Remove User from Group"
+    echo "7. User Information"
+    echo "8. List Users"
+    echo "9. exit"
+    echo "================================="
+}
+
 LOG_FILE="User_management.log"
 
 log_message() {
@@ -194,6 +211,7 @@ List_user(){
 
 }
 
+show_menu
 
 while true
 do
