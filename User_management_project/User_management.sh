@@ -9,7 +9,18 @@ log_message() {
 create_user(){
 	read -p "username:" username
 
+	if [ -z "$username" ]; then
+		echo "enter an an valid username"
+		return
+	fi
+
+	if ! id "$username" &>/dev/null; then
+		echo "Error: User '$username' does not exist"
+		return 1
+        fi
+
 	sudo useradd "$username"
+
 
 	if [ $? -eq 0 ]; then
 		echo "username $username is created sucessfully"
@@ -26,6 +37,16 @@ create_user(){
 delete_user(){
 	read -p "Enter username to delete:" username
 
+	if [ -z "$username" ]; then
+		echo "username cannot be empty"
+		return
+	fi
+
+	if ! id "$username" &>/dev/null; then
+		echo "Error: User '$username' does not exist"
+		return 1
+	fi
+
 	sudo userdel "$username"
 
 	if [ $? -eq 0 ]; then
@@ -40,11 +61,20 @@ delete_user(){
 create_group(){
 	read -p "Enter groupname:" groupname
 
+	if [ -z "$groupname" ]; then
+		echo "groupname cannot be empty"
+	fi
+
+	if ! getent group "$group" &>/dev/null; then
+		 echo "Error: group '$groupname' does not exist"
+		 return 1
+	 fi
+
 	sudo groupadd "$groupname"
 
 	if [ $? -eq 0 ]; then
 		echo "$groupname created sucessfully"
-		log_message "User $groupname created successfully"
+		log_message "group $groupname created successfully"
 	else
 		echo "failed to create group"
 		log_message "Failed to create group $groupname"
@@ -54,11 +84,21 @@ create_group(){
 delete_group(){
 	    read -p "Enter group name to delete: " groupname
 
+	    if [ -z "$groupname" ]; then
+		    echo "groupname cannot be empty"
+	    fi
+
+
+            if ! getent group "$groupname" &>/dev/null; then
+		    echo "Error: group '$groupname' does not exist"
+		    return 1
+	    fi
+
             sudo groupdel "$groupname"
 
            if [ $? -eq 0 ]; then
 		   echo "$groupname deleted successfully"
-		   log_message "User $groupname deleted successfully"
+		   log_message "group $groupname deleted successfully"
 	   else
 		   echo "Group deletion failed"
 		   log_message "Failed to delete group $groupname"
@@ -68,7 +108,25 @@ delete_group(){
 add_user_group(){
 	read -p "username:" username
 	read -p "groupname:" groupname
-	
+
+
+	if [ -z "$username" ] || [ -z "$groupname" ]; then
+		echo " the username and the groupname cannot be empty"
+		return
+	fi
+
+
+        if ! id "$username" &>/dev/null; then
+	       	echo "Error: User '$username' does not exist"
+	       	return 1
+       	fi
+
+ 
+        if ! getent group "$groupname" &>/dev/null; then
+		echo "Error: group '$groupname' does not exist"
+		return 1
+        fi
+
 	sudo usermod -aG "$groupname" "$username"
 
         if [ $? -eq 0 ]; then
@@ -84,7 +142,24 @@ remove_user_from_group(){
 	read -p "username:" username
 	read -p "groupname:" groupname
 
-	sudo gpasswd -d "$username" "$groupname"
+	if [ -z "$username" ] || [ -z "$groupname" ]; then
+		echo "the username and groupname cannot be empty"
+		return
+	fi
+
+
+        if ! id "$username" &>/dev/null; then
+	       	echo "Error: User '$username' does not exist"
+	       	return 1
+	fi
+
+
+        if ! getent group "$groupname" &>/dev/null; then
+		echo "Error: group '$groupname' does not exist" 
+		return 1
+       	fi
+
+	sudo gpasswd "$username" "$groupname"
 
 	if [ $? -eq 0 ]; then
 		echo "$username removed $groupname"
@@ -104,6 +179,8 @@ user_information(){
         echo
         echo "Groups:"
         groups "$username"
+
+	log_message "Viewed information for user $username"
     else
         echo "User does not exist"
 	log_message "Failed to get user information"
